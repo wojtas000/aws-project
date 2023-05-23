@@ -1,0 +1,20 @@
+{
+    "Records": [
+      {
+        "eventVersion": "2.1",
+        "eventSource": "aws:s3",
+        "awsRegion": "us-east-1",
+        "eventTime": "2023-05-24T10:30:00.000Z",
+        "eventName": "ObjectRemoved:Delete",
+        "s3": {
+          "bucket": {
+            "name": "your-s3-watermark-project-image-bucket",
+            "arn": "arn:aws:s3:::watermark-project-image-bucket"
+          },
+          "object": {
+            "key": "Golden_Retriever_standing_Tucker.jpg"
+          }
+        }
+      }
+    ]
+  }
