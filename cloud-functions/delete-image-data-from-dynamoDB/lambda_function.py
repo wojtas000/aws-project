@@ -1,6 +1,7 @@
 import json
 import uuid
 import boto3
+from datetime import datetime
 
 
 def lambda_handler(event, context):
@@ -27,12 +28,16 @@ def lambda_handler(event, context):
     # Generate a unique ID using UUID
     unique_id = str(uuid.uuid4())
     
+    # Get the current timestamp
+    timestamp = datetime.now().isoformat()
+    
     action = 'deletion'
     
     item = {
         'ID': {'S': unique_id},
         'Image_ID': {'S': str(s3_key)},
-        'Action': {'S': action}
+        'Action': {'S': action},
+        'Date': {'S': timestamp}
     }
     
     dynamodb_client.put_item(
