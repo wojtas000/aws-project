@@ -11,6 +11,7 @@ APP_CLIENT_ID = '4krct8l10fd5cb2tgshild0ciq'
 # Initialize Cognito client and user pool
 client = boto3.client('cognito-idp', region_name=REGION_NAME)
 
+
 def sign_up_page():
     st.title('Sign Up')
 
@@ -50,7 +51,6 @@ def sign_up_page():
                     ]
                 )
                 st.success('Sign up successful! Please check your email for a verification link.')
-                verification_code = st.text_input('Verification Code')
 
             except client.exceptions.UsernameExistsException:
                 st.error('User already exists')
@@ -58,6 +58,7 @@ def sign_up_page():
                 st.error(f'Sign up error: {str(e)}')
         else:
             st.error('Passwords do not match')
+
 
 def sign_in_page():
     st.title('Sign In')
@@ -74,10 +75,10 @@ def sign_in_page():
                     'PASSWORD': password
                 }
             )
-            # Successful authentication
-            access_token = response['AuthenticationResult']['AccessToken']
+    
             st.success('Sign in successful!')
             
+            # Initialize user session
             user_page()
 
         except client.exceptions.NotAuthorizedException:
