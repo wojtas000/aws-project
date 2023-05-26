@@ -4,33 +4,43 @@ import boto3
 from datetime import datetime
 
 def lambda_handler(event, context):
+    
+    s3_client = boto3.client('s3')
+    
     # Retrieve S3 bucket and object information from the event
     s3_bucket = event['Records'][0]['s3']['bucket']['name']
     s3_key = event['Records'][0]['s3']['object']['key']
 
-    # Extract image metadata using Amazon Rekognition or any other image analysis library
-
-    # Example: Extract image metadata using Amazon Rekognition
+    # Extract the metadata of image
+    response = s3_client.head_object(Bucket=s3_bucket, Key=s3_key)
+    image_size = response['ContentLength']
+    image_format = response['ContentType']
+    
+    
+    # Extract image label using Amazon Rekognition
     rekognition_client = boto3.client('rekognition')
-    response = rekognition_client.detect_labels(
+    rekognition_response = rekognition_client.detect_labels(
         Image={'S3Object': {'Bucket': s3_bucket, 'Name': s3_key}},
-        MaxLabels=10
+        MaxLabels=1
     )
-    labels = [label['Name'] for label in response['Labels']]
+    
+    label = rekognition_response['Labels'][0]['Name']
     
     # Update DynamoDB table with image information
     dynamodb_client = boto3.client('dynamodb')
-    dynamodb_table = 'Images'
+    images_table = 'Images'
     user_history_table = 'User_history'
 
     item = {
         'Image_ID': {'S': str(s3_key)},
-        'Labels': {'SS': labels}
+        'Label': {'S': label},
+        'Size': {'S': str(image_size)},
+        'Format': {'S': image_format}
     }
     
     
     dynamodb_client.put_item(
-        TableName=dynamodb_table,
+        TableName=images_table,
         Item=item
     )
     
