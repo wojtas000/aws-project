@@ -13,6 +13,8 @@ client = boto3.client('cognito-idp', region_name=REGION_NAME)
 
 def sign_up_page():
     st.title('Sign Up')
+
+    # Input boxes for user information
     username = st.text_input('Username')
     email = st.text_input('Email')
     phone_number = st.text_input('Phone Number', placeholder='Optional')
@@ -20,11 +22,15 @@ def sign_up_page():
     try:
         parsed_number = phonenumbers.parse(phone_number, None)
         phone_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+    
     except phonenumbers.NumberParseException:
         st.error('Invalid phone number')
+    
+    # Input boxes for password
     password = st.text_input('Password', type='password')
     confirm_password = st.text_input('Confirm Password', type='password')
 
+    # Sign up button
     if st.button('Sign Up'):
         if password == confirm_password:
             try:
@@ -43,23 +49,9 @@ def sign_up_page():
                         }
                     ]
                 )
-                st.success('Sign up successful! Please check your email for a verification code.')
+                st.success('Sign up successful! Please check your email for a verification link.')
                 verification_code = st.text_input('Verification Code')
-                print(verification_code)
-                if st.button('Verify'):
-                    try:
-                        response = client.confirm_sign_up(
-                            ClientId=APP_CLIENT_ID,
-                            Username=username,
-                            ConfirmationCode=verification_code
-                        )
-                        st.success('Verification successful! You can now sign in.')
-                    except client.exceptions.UserNotFoundException:
-                        st.error('User does not exist')
-                    except client.exceptions.CodeMismatchException:
-                        st.error('Invalid verification code')
-                    except Exception as e:
-                        st.error(f'Verification error: {str(e)}')
+
             except client.exceptions.UsernameExistsException:
                 st.error('User already exists')
             except Exception as e:
@@ -85,6 +77,7 @@ def sign_in_page():
             # Successful authentication
             access_token = response['AuthenticationResult']['AccessToken']
             st.success('Sign in successful!')
+            
             user_page()
 
         except client.exceptions.NotAuthorizedException:
