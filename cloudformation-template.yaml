@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  ECRRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "my-container-app"
+
+  TaskDefinition:
+    Type: "AWS::ECS::TaskDefinition"
+    Properties:
+      Family: "streamlit-task"
+      Cpu: "256"
+      Memory: "512"
+      NetworkMode: "awsvpc"
+      RequiresCompatibilities:
+        - "FARGATE"
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: "streamlit-container"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-container-app"
+          PortMappings:
+            - ContainerPort: 8501
+              Protocol: "tcp"
+
+  TaskExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: "streamlit-task-execution-role"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs-tasks.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+  Cluster:
+    Type: "AWS::ECS::Cluster"
+
+  Service:
+    Type: "AWS::ECS::Service"
+    DependsOn:
+      - TaskDefinition
+    Properties:
+      Cluster: !Ref Cluster
+      ServiceName: "streamlit-service"
+      LaunchType: "FARGATE"
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - !Ref SubnetIds
+          SecurityGroups:
+            - !Ref SecurityGroup
+
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Allow inbound access to the Streamlit app"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "tcp"
+          FromPort: 8501
+          ToPort: 8501
+
+Parameters:
+  VpcId:
+    Type: "AWS::EC2::VPC::Id"
+
+  SubnetIds:
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: "Select the subnets to launch the Fargate tasks"
+
+Outputs:
+  StreamlitAppURL:
+    Description: "URL to access the Streamlit app"
+    Value: !Sub "http://!Ref Service.EndpointURL/health"
