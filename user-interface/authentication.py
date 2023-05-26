@@ -1,11 +1,12 @@
 import streamlit as st
 import boto3
 import phonenumbers
+from ui import user_page
 
 # Constants
 REGION_NAME = 'us-east-1'
-USER_POOL_ID = 'us-east-1_NoeMtAIEu'
-APP_CLIENT_ID = '7a8d9r2nvnee7228m0pmm2n3n5'
+USER_POOL_ID = 'us-east-1_frgt78EiF'
+APP_CLIENT_ID = '4krct8l10fd5cb2tgshild0ciq'
 
 # Initialize Cognito client and user pool
 client = boto3.client('cognito-idp', region_name=REGION_NAME)
@@ -44,11 +45,12 @@ def sign_up_page():
                 )
                 st.success('Sign up successful! Please check your email for a verification code.')
                 verification_code = st.text_input('Verification Code')
+                print(verification_code)
                 if st.button('Verify'):
                     try:
                         response = client.confirm_sign_up(
                             ClientId=APP_CLIENT_ID,
-                            Username=email,
+                            Username=username,
                             ConfirmationCode=verification_code
                         )
                         st.success('Verification successful! You can now sign in.')
@@ -67,7 +69,7 @@ def sign_up_page():
 
 def sign_in_page():
     st.title('Sign In')
-    email = st.text_input('Email')
+    username = st.text_input('Username')
     password = st.text_input('Password', type='password')
 
     if st.button('Sign In'):
@@ -76,14 +78,15 @@ def sign_in_page():
                 ClientId=APP_CLIENT_ID,
                 AuthFlow='USER_PASSWORD_AUTH',
                 AuthParameters={
-                    'USERNAME': email,
+                    'USERNAME': username,
                     'PASSWORD': password
                 }
             )
             # Successful authentication
             access_token = response['AuthenticationResult']['AccessToken']
             st.success('Sign in successful!')
-            user_page(access_token)
+            user_page()
+
         except client.exceptions.NotAuthorizedException:
             st.error('Invalid username or password')
         except client.exceptions.UserNotFoundException:
@@ -91,10 +94,6 @@ def sign_in_page():
         except Exception as e:
             st.error(f'Sign in error: {str(e)}')
 
-def user_page(access_token):
-    st.title('User Page')
-    st.write(f'Access Token: {access_token}')
-    # Add your code to display user-specific content or functionality
 
 def main():
     st.sidebar.title('Authentication')
@@ -104,6 +103,7 @@ def main():
         sign_up_page()
     elif option == 'Sign In':
         sign_in_page()
+
 
 if __name__ == '__main__':
     main()

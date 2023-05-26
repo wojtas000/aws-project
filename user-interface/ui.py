@@ -37,7 +37,7 @@ def remove_watermark(image_bytes):
 
 
 # Streamlit app code
-def main():
+def user_page():
     st.title("Watermark App")
     st.write("Choose an option:")
 
@@ -91,7 +91,7 @@ def main():
                 # Display the resulting image
                 st.image(result_image, caption="Result", use_column_width=True)
 
-               
+
 # Run the Streamlit app
 if __name__ == "__main__":
-    main()
+    user_page()
