@@ -15,7 +15,7 @@ def sign_up_page():
     st.title('Sign Up')
     username = st.text_input('Username')
     email = st.text_input('Email')
-    phone_number = st.text_input('Phone Number')
+    phone_number = st.text_input('Phone Number', placeholder='Optional')
 
     try:
         parsed_number = phonenumbers.parse(phone_number, None)
