@@ -1,7 +1,7 @@
 import streamlit as st
 import boto3
 import phonenumbers
-from ui import user_page
+from ui import *
 
 # Constants
 REGION_NAME = 'us-east-1'
@@ -10,6 +10,7 @@ APP_CLIENT_ID = '4krct8l10fd5cb2tgshild0ciq'
 
 # Initialize Cognito client and user pool
 client = boto3.client('cognito-idp', region_name=REGION_NAME)
+
 
 
 def sign_up_page():
@@ -61,32 +62,40 @@ def sign_up_page():
 
 
 def sign_in_page():
-    st.title('Sign In')
-    username = st.text_input('Username')
-    password = st.text_input('Password', type='password')
+    try:
+        if st.session_state['access_token'] != None:
+            st.write('You are already signed in!')
+        # uploader()
+        user_page()
+    except:
 
-    if st.button('Sign In'):
-        try:
-            response = client.initiate_auth(
-                ClientId=APP_CLIENT_ID,
-                AuthFlow='USER_PASSWORD_AUTH',
-                AuthParameters={
-                    'USERNAME': username,
-                    'PASSWORD': password
-                }
-            )
-    
-            st.success('Sign in successful!')
-            
-            # Initialize user session
-            user_page()
+        st.title('Sign In')
+        username = st.text_input('Username')
+        password = st.text_input('Password', type='password')
 
-        except client.exceptions.NotAuthorizedException:
-            st.error('Invalid username or password')
-        except client.exceptions.UserNotFoundException:
-            st.error('User does not exist')
-        except Exception as e:
-            st.error(f'Sign in error: {str(e)}')
+        if st.button('Sign In'):
+            try:
+                response = client.initiate_auth(
+                    ClientId=APP_CLIENT_ID,
+                    AuthFlow='USER_PASSWORD_AUTH',
+                    AuthParameters={
+                        'USERNAME': username,
+                        'PASSWORD': password
+                    }
+                )
+                st.session_state['access_token'] = response['AuthenticationResult']['AccessToken']
+        
+                st.success('Signed in successful!')
+                
+                # reload the page
+                st.experimental_rerun()
+
+            except client.exceptions.NotAuthorizedException:
+                st.error('Invalid username or password')
+            except client.exceptions.UserNotFoundException:
+                st.error('User does not exist')
+            except Exception as e:
+                st.error(f'Sign in error: {str(e)}')
 
 
 def main():

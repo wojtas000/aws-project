@@ -1,6 +1,41 @@
 import streamlit as st
 from PIL import Image
 import io
+import boto3
+
+aws_region = 'us-east-1'  # Replace with your desired region
+
+# Create an S3 client
+s3 = boto3.client('s3', region_name=aws_region)
+
+# Replace 'your-lambda-function-name' with your actual Lambda function name
+lambda_function_name = 'upload_photo_to_the_bucket'
+
+# Streamlit app code
+def uploader():
+    st.title("Photo Uploader")
+    
+    # File uploader
+    photo = st.file_uploader("Upload a photo", type=['jpg', 'jpeg', 'png'])
+    
+    if photo is not None:
+        st.image(photo, caption='Uploaded photo', use_column_width=True)
+    
+        # Invoke the Lambda function
+        invoke_lambda(photo)
+        st.success('Photo uploaded successfully')
+
+def invoke_lambda(photo):
+    # Convert the photo to bytes
+    photo_bytes = photo.read()
+    
+    # Invoke the Lambda function
+    lambda_client = boto3.client('lambda', region_name=aws_region)
+    lambda_client.invoke(
+        FunctionName=lambda_function_name,
+        InvocationType='Event',
+        Payload=photo_bytes
+    )
 
 def add_watermark(image_bytes, watermark_bytes, X, Y):
     # Open the main image
