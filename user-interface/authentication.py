@@ -4,9 +4,9 @@ import phonenumbers
 from ui import *
 
 # Constants
-REGION_NAME = 'us-east-1'
-USER_POOL_ID = 'us-east-1_frgt78EiF'
-APP_CLIENT_ID = '4krct8l10fd5cb2tgshild0ciq'
+REGION_NAME = 'eu-central-1'
+USER_POOL_ID = 'eu-central-1_OJm4qIxPa'
+APP_CLIENT_ID = '35mlj3sqbq6mbtsr4k497t3pr7'
 
 # Initialize Cognito client and user pool
 client = boto3.client('cognito-idp', region_name=REGION_NAME)
