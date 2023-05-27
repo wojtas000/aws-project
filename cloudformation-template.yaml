@@ -21,6 +21,13 @@ Resources:
           PortMappings:
             - ContainerPort: 8501
               Protocol: "tcp"
+          Command:
+            - "sh"
+            - "-c"
+            - !Sub |
+                aws s3 cp s3://${CodeBucketName}/code.zip .
+                unzip code.zip
+                streamlit run app.py
 
   TaskExecutionRole:
     Type: "AWS::IAM::Role"
@@ -68,6 +75,20 @@ Resources:
           FromPort: 8501
           ToPort: 8501
 
+  CodeBucket:
+    Type: "AWS::S3::Bucket"
+
+  CodeBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref CodeBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Join ["/", [!GetAtt CodeBucket.Arn, "*"]]
+
 Parameters:
   VpcId:
     Type: "AWS::EC2::VPC::Id"
@@ -75,6 +96,10 @@ Parameters:
   SubnetIds:
     Type: "List<AWS::EC2::Subnet::Id>"
     Description: "Select the subnets to launch the Fargate tasks"
+
+  CodeBucketName:
+    Type: "String"
+    Description: "S3 bucket name containing the Dockerfile and code ZIP file"
 
 Outputs:
   StreamlitAppURL:
