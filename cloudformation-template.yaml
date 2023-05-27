@@ -15,6 +15,7 @@ Parameters:
   CodeBucketName:
     Type: "String"
     Description: "S3 bucket name containing the Dockerfile and code ZIP file"
+  
 Resources:
   ECRRepository:
     Type: "AWS::ECR::Repository"
@@ -77,17 +78,6 @@ Resources:
 
   CodeBucket:
     Type: "AWS::S3::Bucket"
-
-  CodeBucketPolicy:
-    Type: "AWS::S3::BucketPolicy"
-    Properties:
-      Bucket: !Ref CodeBucket
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal: "*"
-            Action: s3:GetObject
-            Resource: !Join ["/", [!GetAtt CodeBucket.Arn, "*"]]
 
 Outputs:
   StreamlitAppURL:
