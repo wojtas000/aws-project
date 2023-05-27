@@ -1,4 +1,21 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  LabRoleArn:
+    Type: String
+    Description: "ARN of the existing IAM role (LabRole)"
+
+  VpcId:
+    Type: "AWS::EC2::VPC::Id"
+
+  SubnetIds:
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: "Select the subnets to launch the Fargate tasks"
+
+  CodeBucketName:
+    Type: "String"
+    Description: "S3 bucket name containing the Dockerfile and code ZIP file"
+
 Resources:
   ECRRepository:
     Type: "AWS::ECR::Repository"
@@ -14,7 +31,7 @@ Resources:
       NetworkMode: "awsvpc"
       RequiresCompatibilities:
         - "FARGATE"
-      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      ExecutionRoleArn: !Ref LabRoleArn  # Use existing LabRole ARN
       ContainerDefinitions:
         - Name: "streamlit-container"
           Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-container-app"
@@ -28,21 +45,6 @@ Resources:
                 aws s3 cp s3://${CodeBucketName}/code.zip .
                 unzip code.zip
                 streamlit run app.py
-
-  TaskExecutionRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: "streamlit-task-execution-role"
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "ecs-tasks.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 
   Cluster:
     Type: "AWS::ECS::Cluster"
@@ -88,18 +90,6 @@ Resources:
             Principal: "*"
             Action: s3:GetObject
             Resource: !Join ["/", [!GetAtt CodeBucket.Arn, "*"]]
-
-Parameters:
-  VpcId:
-    Type: "AWS::EC2::VPC::Id"
-
-  SubnetIds:
-    Type: "List<AWS::EC2::Subnet::Id>"
-    Description: "Select the subnets to launch the Fargate tasks"
-
-  CodeBucketName:
-    Type: "String"
-    Description: "S3 bucket name containing the Dockerfile and code ZIP file"
 
 Outputs:
   StreamlitAppURL:
