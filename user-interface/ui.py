@@ -215,4 +215,4 @@ def user_page(username):
 
 # Run the Streamlit app
 if __name__ == "__main__":
-    user_page()
+    user_page(username=st.session_state['username'])
