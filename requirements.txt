@@ -1,3 +1,5 @@
 streamlit
 pillow
 pdf2image
+boto3
+phonenumbers
