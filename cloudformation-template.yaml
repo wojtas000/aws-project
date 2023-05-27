@@ -15,7 +15,6 @@ Parameters:
   CodeBucketName:
     Type: "String"
     Description: "S3 bucket name containing the Dockerfile and code ZIP file"
-
 Resources:
   ECRRepository:
     Type: "AWS::ECR::Repository"
@@ -26,8 +25,8 @@ Resources:
     Type: "AWS::ECS::TaskDefinition"
     Properties:
       Family: "streamlit-task"
-      Cpu: "256"
-      Memory: "512"
+      Cpu: 256
+      Memory: 512
       NetworkMode: "awsvpc"
       RequiresCompatibilities:
         - "FARGATE"
@@ -61,8 +60,7 @@ Resources:
       TaskDefinition: !Ref TaskDefinition
       NetworkConfiguration:
         AwsvpcConfiguration:
-          Subnets:
-            - !Ref SubnetIds
+          Subnets: !Ref SubnetIds
           SecurityGroups:
             - !Ref SecurityGroup
 
