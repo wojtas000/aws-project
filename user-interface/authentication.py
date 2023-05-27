@@ -6,6 +6,8 @@ from ui import *
 # Constants
 REGION_NAME = 'eu-central-1'
 USER_POOL_ID = 'eu-central-1_OJm4qIxPa'
+
+# Move to secrets!!!
 APP_CLIENT_ID = '35mlj3sqbq6mbtsr4k497t3pr7'
 
 # Initialize Cognito client and user pool
@@ -21,12 +23,13 @@ def sign_up_page():
     email = st.text_input('Email')
     phone_number = st.text_input('Phone Number', placeholder='Optional')
 
-    try:
-        parsed_number = phonenumbers.parse(phone_number, None)
-        phone_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
-    
-    except phonenumbers.NumberParseException:
-        st.error('Invalid phone number')
+    if phone_number is not None and phone_number != '':
+        try:
+            parsed_number = phonenumbers.parse(phone_number, None)
+            phone_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+        
+        except phonenumbers.NumberParseException:
+            st.error('Invalid phone number')
     
     # Input boxes for password
     password = st.text_input('Password', type='password')
@@ -62,11 +65,11 @@ def sign_up_page():
 
 
 def sign_in_page():
+    # user_page(username=st.session_state['username'])
     try:
-        if st.session_state['access_token'] != None:
+        if st.session_state['username'] != None:
             st.write('You are already signed in!')
-        # uploader()
-        user_page()
+            user_page(username=st.session_state['username'])
     except:
 
         st.title('Sign In')
@@ -84,7 +87,8 @@ def sign_in_page():
                     }
                 )
                 st.session_state['access_token'] = response['AuthenticationResult']['AccessToken']
-        
+                st.session_state['username'] = username
+
                 st.success('Signed in successful!')
                 
                 # reload the page
