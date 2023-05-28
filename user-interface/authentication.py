@@ -10,7 +10,7 @@ def get_cognito_secrets():
     """
     Get Cognito secrets from AWS Secrets Manager
     """
-    
+
     secret_name = "Cognito_secrets"
     region_name = "eu-central-1"
 
@@ -25,20 +25,20 @@ def get_cognito_secrets():
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
         )
-        
+
         secret_string = get_secret_value_response['SecretString']
         secret_dict = json.loads(secret_string)
-        
+
         user_pool_id = secret_dict['USER_POOL_ID']
         app_client_id = secret_dict['APP_CLIENT_ID']
-        
+
         return user_pool_id, app_client_id
-    
+
     except ClientError as e:
         raise e
 
-# Constants
 
+# Constants
 REGION_NAME = 'eu-central-1'
 USER_POOL_ID, APP_CLIENT_ID = get_cognito_secrets()
 
@@ -46,8 +46,21 @@ USER_POOL_ID, APP_CLIENT_ID = get_cognito_secrets()
 client = boto3.client('cognito-idp', region_name=REGION_NAME)
 
 
+def main_page():
+    st.subheader('Main Page')
+    st.title('Welcome to watermark app', anchor='center')
+    st.image('images/watermark-logo.png', width=300)
+    st.write('This is a watermark app that allows you to:')
+    st.write('- Upload an image and watermark')
+    st.write('- Add a watermark to the image')
+    st.write('- Remove the watermark from the image')
+    st.write('- Download the watermarked image')
+    st.write('Please sign up or sign in to use the app')
+
+
 def sign_up_page():
-    st.title('Sign Up')
+    
+    st.subheader('Sign Up')
 
     # Input boxes for user information
     username = st.text_input('Username')
@@ -58,10 +71,10 @@ def sign_up_page():
         try:
             parsed_number = phonenumbers.parse(phone_number, None)
             phone_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
-        
+
         except phonenumbers.NumberParseException:
             st.error('Invalid phone number')
-    
+
     # Input boxes for password
     password = st.text_input('Password', type='password')
     confirm_password = st.text_input('Confirm Password', type='password')
@@ -96,7 +109,6 @@ def sign_up_page():
 
 
 def sign_in_page():
-    # user_page(username=st.session_state['username'])
     try:
         if st.session_state['username'] != None:
             st.write('You are already signed in!')
@@ -107,37 +119,38 @@ def sign_in_page():
         username = st.text_input('Username')
         password = st.text_input('Password', type='password')
 
-        if st.button('Sign In'):
-            try:
-                response = client.initiate_auth(
-                    ClientId=APP_CLIENT_ID,
-                    AuthFlow='USER_PASSWORD_AUTH',
-                    AuthParameters={
-                        'USERNAME': username,
-                        'PASSWORD': password
-                    }
-                )
-                st.session_state['access_token'] = response['AuthenticationResult']['AccessToken']
-                st.session_state['username'] = username
+    if st.button('Sign In'):
+        try:
+            response = client.initiate_auth(
+                ClientId=APP_CLIENT_ID,
+                AuthFlow='USER_PASSWORD_AUTH',
+                AuthParameters={
+                    'USERNAME': username,
+                    'PASSWORD': password
+                }
+            )
+            st.session_state['access_token'] = response['AuthenticationResult']['AccessToken']
+            st.session_state['username'] = username
 
-                st.success('Signed in successful!')
-                
-                # reload the page
-                st.experimental_rerun()
+            st.success('Signed in successfully')
 
-            except client.exceptions.NotAuthorizedException:
-                st.error('Invalid username or password')
-            except client.exceptions.UserNotFoundException:
-                st.error('User does not exist')
-            except Exception as e:
-                st.error(f'Sign in error: {str(e)}')
+            # Redirect to a new page
+            st.experimental_rerun()
+
+        except client.exceptions.NotAuthorizedException:
+            st.error('Invalid username or password')
+        except client.exceptions.UserNotFoundException:
+            st.error('User does not exist')
+        except Exception as e:
+            st.error(f'Sign in error: {str(e)}')
 
 
 def main():
     st.sidebar.title('Authentication')
-    option = st.sidebar.selectbox('Select Option', ('Sign Up', 'Sign In'))
-
-    if option == 'Sign Up':
+    option = st.sidebar.selectbox('Select Option', ('Main', 'Sign Up', 'Sign In'))
+    if option == 'Main':
+        main_page()
+    elif option == 'Sign Up':
         sign_up_page()
     elif option == 'Sign In':
         sign_in_page()

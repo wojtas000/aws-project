@@ -71,11 +71,30 @@ def remove_watermark(image_bytes):
     return image
 
 
-# Streamlit app code
+# # Streamlit app code
+# def user_page(username):
+#     st.title("Watermark App")
+#     st.write("Choose an option:")
+#     with st.expander('Upload Images'):
+#         upload_images_page(username)
+#     with st.expander('Your image list'):
+#         list_images_page(username)
+
+
+# def list_images_page(username):
+#     images = list_images(username)
+#     if images==[]:
+#         st.write("You don't have any images yet")
+#         return
+#     chosen_image_name = st.selectbox("Select image", images)
+#     image_file = s3.get_object(Bucket='watermark-project-images-bucket', Key=chosen_image_name)
+#     image_file = image_file['Body'].read()
+#     image_file = Image.open(io.BytesIO(image_file)).convert("RGBA")
+#     st.image(image_file, caption="Main Image", use_column_width=True)
+
+
 def user_page(username):
     st.title("Watermark App")
-    st.write("Choose an option:")
-
     option = st.radio("Select an option", ("Add Watermark", "Remove Watermark"))
 
     if option == "Add Watermark":
