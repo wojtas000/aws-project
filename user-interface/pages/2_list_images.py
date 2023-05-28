@@ -51,4 +51,8 @@ def list_images_page(username):
                 for watermark in watermarks:
                     s3.delete_object(Bucket='watermark-project-watermarks-bucket', Key=watermark)
 
-list_images_page(username=st.session_state['username'])
+
+if __name__=='__main__':
+    if 'username' not in st.session_state:
+        st.session_state['username'] = None
+    list_images_page(username=st.session_state['username'])

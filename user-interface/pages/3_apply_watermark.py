@@ -147,4 +147,7 @@ def apply_watermark_page(username):
                 st.image(result_image, caption="Result", use_column_width=True)
 
 
-apply_watermark_page(username=st.session_state['username'])
+if __name__=='__main__':
+    if 'username' not in st.session_state:
+        st.session_state['username'] = None
+    apply_watermark_page(username=st.session_state['username'])

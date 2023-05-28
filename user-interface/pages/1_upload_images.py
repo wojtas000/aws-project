@@ -57,7 +57,8 @@ def upload_page(username):
 
             if st.button("Upload watermark to database"):
                 st.experimental_rerun()
-        
 
-
-upload_page(username=st.session_state['username'])
+if __name__=='__main__':
+    if 'username' not in st.session_state:
+        st.session_state['username'] = None
+    upload_page(username=st.session_state['username'])
