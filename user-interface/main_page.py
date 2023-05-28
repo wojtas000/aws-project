@@ -109,15 +109,10 @@ def sign_up_page():
 
 
 def sign_in_page():
-    try:
-        if st.session_state['username'] != None:
-            st.write('You are already signed in!')
-            user_page(username=st.session_state['username'])
-    except:
 
-        st.title('Sign In')
-        username = st.text_input('Username')
-        password = st.text_input('Password', type='password')
+    st.title('Sign In')
+    username = st.text_input('Username')
+    password = st.text_input('Password', type='password')
 
     if st.button('Sign In'):
         try:
@@ -146,12 +141,15 @@ def sign_in_page():
 
 
 def main():
-    st.sidebar.title('Authentication')
+
+    st.sidebar.title('Authentication:')
     option = st.sidebar.selectbox('Select Option', ('Main', 'Sign Up', 'Sign In'))
     if option == 'Main':
         main_page()
+
     elif option == 'Sign Up':
         sign_up_page()
+
     elif option == 'Sign In':
         sign_in_page()
 
