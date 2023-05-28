@@ -3,18 +3,51 @@ import streamlit as st
 from PIL import Image
 import io
 import boto3
- # MOVE TO THE SECRETS
-aws_access_key_id = 'AKIA6GTDLXZ7S6PVXGWE'
-aws_secret_access_key = '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'
+import json
+from botocore.exceptions import ClientError
 
-# Tworzenie sesji
-session = boto3.Session(
-    aws_access_key_id=aws_access_key_id,
-    aws_secret_access_key=aws_secret_access_key
-)
+
+# def get_root_user_secrets():
+#     secret_name = "root_user_credentials"
+#     region_name = "eu-central-1"
+
+#     # Create a Secrets Manager client
+#     session = boto3.session.Session()
+#     client = session.client(
+#         service_name='secretsmanager',
+#         region_name=region_name
+#     )
+
+#     try:
+#         get_secret_value_response = client.get_secret_value(
+#             SecretId=secret_name
+#         )
+        
+#         secret_string = get_secret_value_response['SecretString']
+#         secret_dict = json.loads(secret_string)
+        
+#         aws_access_key_id = secret_dict['AWS_ACCESS_KEY_ID']
+#         aws_secret_access_key = secret_dict['AWS_SECRET_ACCESS_KEY']
+        
+#         return aws_access_key_id, aws_secret_access_key
+    
+#     except ClientError as e:
+#         raise e
+
+# aws_access_key_id, aws_secret_access_key = get_root_user_secrets()
+
+
+# # Tworzenie sesji
+
+# aws_access_key_id, aws_secret_access_key = get_secrets()
+
+# session = boto3.Session(
+#     aws_access_key_id=aws_access_key_id,
+#     aws_secret_access_key=aws_secret_access_key
+# )
 
 # Tworzenie klienta S3
-s3 = session.client('s3')
+s3 = boto3.client('s3')
 
 def list_images(username):
     response = s3.list_objects(Bucket='watermark-project-images-bucket', Prefix=username+'/')

@@ -3,3 +3,6 @@ pillow
 pdf2image
 boto3
 phonenumbers
+awscli
+json
+botocore.exceptions
