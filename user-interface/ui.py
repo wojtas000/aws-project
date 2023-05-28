@@ -7,35 +7,6 @@ import json
 from botocore.exceptions import ClientError
 
 
-# def get_root_user_secrets():
-#     secret_name = "root_user_credentials"
-#     region_name = "eu-central-1"
-
-#     # Create a Secrets Manager client
-#     session = boto3.session.Session()
-#     client = session.client(
-#         service_name='secretsmanager',
-#         region_name=region_name
-#     )
-
-#     try:
-#         get_secret_value_response = client.get_secret_value(
-#             SecretId=secret_name
-#         )
-        
-#         secret_string = get_secret_value_response['SecretString']
-#         secret_dict = json.loads(secret_string)
-        
-#         aws_access_key_id = secret_dict['AWS_ACCESS_KEY_ID']
-#         aws_secret_access_key = secret_dict['AWS_SECRET_ACCESS_KEY']
-        
-#         return aws_access_key_id, aws_secret_access_key
-    
-#     except ClientError as e:
-#         raise e
-
-# aws_access_key_id, aws_secret_access_key = get_root_user_secrets()
-
 
 # # Tworzenie sesji
 
