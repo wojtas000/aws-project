@@ -31,13 +31,20 @@ def lambda_handler(event, context):
     # Get the current timestamp
     timestamp = datetime.now().isoformat()
     
+    # Extract the user from the image key if the key is in the correct format
+    if '/' in s3_key:
+        user = s3_key.split('/')[0]
+    else:
+        user = 'Unknown'
+    
     action = 'deletion'
     
     item = {
         'ID': {'S': unique_id},
         'Image_ID': {'S': str(s3_key)},
         'Action': {'S': action},
-        'Date': {'S': timestamp}
+        'Date': {'S': timestamp},
+        'User': {'S': user}
     }
     
     dynamodb_client.put_item(
