@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 8501
 
 # Set the command to run the Streamlit app when the container starts
-CMD ["streamlit", "run", "user_interface/authentication.py"]
+CMD ["streamlit", "run", "user-interface/main_page.py"]
 
 # docker build -t streamlit-app .
 # docker run -p 8501:8501 streamlit-app 
