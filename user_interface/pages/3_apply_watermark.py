@@ -4,7 +4,7 @@ from PIL import Image
 import io
 import boto3
 import json
-from botocore.exceptions import ClientError
+
 
 
 # Tworzenie klienta S3
@@ -126,24 +126,6 @@ def apply_watermark_page(username):
                 result_image = add_watermark(image_bytes, watermark_bytes, X, Y)
 
                 # # Display the resulting image
-                st.image(result_image, caption="Result", use_column_width=True)
-
-        # File uploader for the image with watermark
-        image_file = st.file_uploader("Upload the image with watermark", type=["png", "jpg", "jpeg"])
-
-        if image_file:
-            # Display the uploaded image
-            st.image(image_file, caption="Image with Watermark", use_column_width=True)
-
-            # Button to remove watermark
-            if st.button("Remove Watermark"):
-                # Convert file uploader object to bytes
-                image_bytes = image_file.read()
-
-                # Remove the watermark from the image
-                result_image = remove_watermark(image_bytes)
-
-                # Display the resulting image
                 st.image(result_image, caption="Result", use_column_width=True)
 
 
