@@ -1,29 +1,15 @@
 import streamlit as st
-from PIL import Image
-import io
 import boto3
-
+from pages.api_package.add_remove_watermark import remove_watermark
 
 # Tworzenie klienta S3
 s3 = boto3.client('s3')
-
-
-def remove_watermark(image_bytes):
-    # Load the image
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
-
-    # TODO: Implement watermark removal logic here
-    # Replace the code below with your watermark removal algorithm
-
-    # Simply return the original image for now
-    return image
-
-
 
 def remove_watermark_page(username):
     if st.session_state['username'] is None:
         st.write('You have to sign in first!')
         st.stop()
+
     else:
         username = st.session_state['username']
         st.title("Remove Watermark")

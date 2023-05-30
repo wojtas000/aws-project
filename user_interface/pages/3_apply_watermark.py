@@ -1,82 +1,32 @@
-from io import BytesIO
 import streamlit as st
 from PIL import Image
 import io
 import boto3
-import json
+from pages.api_package.api_requests import get_image_list
+from pages.api_package.add_remove_watermark import add_watermark
 
-
-
-# Tworzenie klienta S3
+# Create S3 client
 s3 = boto3.client('s3')
-
-def list_images(username):
-    response = s3.list_objects(Bucket='watermark-project-images-bucket', Prefix=username+'/')
-    objects = []
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            objects.append(obj['Key'])
-    return objects
-
-def list_watermarks(username):
-    response = s3.list_objects(Bucket='watermark-project-watermarks-bucket', Prefix=username+'/')
-    objects = []
-    if 'Contents' in response:
-        for obj in response['Contents']:
-            objects.append(obj['Key'])
-    return objects
-
-
-def add_watermark(main_image, watermark_image, X, Y):
-    # Open the main image
-    # main_image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
-    image_width, image_height = main_image.size
-
-    # Open the watermark image
-    # watermark_image = Image.open(io.BytesIO(watermark_bytes)).convert("RGBA")
-    watermark_width, watermark_height = watermark_image.size
-
-    # Resize the watermark image to fit within the main image
-    if watermark_width > image_width or watermark_height > image_height:
-        watermark_image.thumbnail((image_width, image_height), Image.ANTIALIAS)
-
-    # Calculate the position to place the watermark
-    pos_x = int((image_width - watermark_image.size[0]) * X / 10)
-    pos_y = int((image_height - watermark_image.size[1]) * (10 - Y) / 10)
-
-    # Apply the watermark onto the main image
-    main_image.paste(watermark_image, (pos_x, pos_y), mask=watermark_image)
-
-    return main_image
-
-
-def remove_watermark(image_bytes):
-    # Load the image
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
-
-    # TODO: Implement watermark removal logic here
-    # Replace the code below with your watermark removal algorithm
-
-    # Simply return the original image for now
-    return image
-
 
 
 def apply_watermark_page(username):
+    
     if st.session_state['username'] is None:
         st.write('You have to sign in first!')
         st.stop()
+    
     else:
         username = st.session_state['username']
         st.title("Apply Watermark")
      
         image, watermark = st.columns(2)
 
+
         with image:
 
-            images = list_images(username)
+            images = get_image_list(username, 'images')
 
-            if images==[]:
+            if not images:
                 st.write("You don't have any images yet")
 
             chosen_image_name = st.selectbox("Select image", images)
@@ -84,12 +34,14 @@ def apply_watermark_page(username):
 
         with watermark:
 
-            watermarks = list_watermarks(username)
-            if watermarks==[]:
+            watermarks = get_image_list(username, 'watermarks')
+
+            if not watermarks:
                 st.write("You don't have any watermarks yet")
         
             chosen_watermark_name = st.selectbox("Select watermark", watermarks)
         
+
         # download choosen image
         image_file = s3.get_object(Bucket='watermark-project-images-bucket', Key=chosen_image_name)
         image_file = image_file['Body'].read()

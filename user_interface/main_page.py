@@ -3,7 +3,6 @@ import boto3
 import json
 import phonenumbers
 from botocore.exceptions import ClientError
-from ui import *
 
 
 def get_cognito_secrets():
@@ -48,20 +47,19 @@ client = boto3.client('cognito-idp', region_name=REGION_NAME)
 
 def main_page():
 
-    st.subheader('Main Page')
-    st.title('Welcome to watermark app', anchor='center')
+    st.title('Welcome to watermark app!', anchor='center')
     st.image('images/watermark-logo.png', width=300)
     st.write('This is a watermark app that allows you to:')
     st.write('- Upload an image and watermark')
     st.write('- Add a watermark to the image')
     st.write('- Remove the watermark from the image')
     st.write('- Download the watermarked image')
-    st.write('Please sign up or sign in to use the app')
+    st.write('Please `sign up` and then `sign in` to use the app.')
 
 
 def sign_up_page():
     
-    st.subheader('Sign Up')
+    st.title('Sign Up')
 
     # Input boxes for user information
     username = st.text_input('Username')
