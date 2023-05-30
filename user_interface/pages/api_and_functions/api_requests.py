@@ -25,8 +25,10 @@ def get_user_history(username):
     payload = {
                 "user_login": username
                }
-
-    response = requests.get(USER_HISTORY_ENDPOINT, json=payload)
+    try:
+        response = requests.get(USER_HISTORY_ENDPOINT, json=payload)
+    except:
+        return {}
 
     if response.status_code == 200:
         
@@ -56,7 +58,10 @@ def add_watermark(main_image_bytes, watermark_image_bytes, X, Y):
     payload_json = json.dumps(payload)
 
     # Make the POST request to invoke the Lambda function
-    response = requests.post(INSERT_WATERMARK_ENDPOINT, data=payload_json)
+    try:
+        response = requests.post(INSERT_WATERMARK_ENDPOINT, data=payload_json)
+    except:
+        return False
 
     # Check the response status code
     if response.status_code == 200:
@@ -67,4 +72,4 @@ def add_watermark(main_image_bytes, watermark_image_bytes, X, Y):
         return result_image_bytes
     
     else:
-        return response.status_code
+        return False

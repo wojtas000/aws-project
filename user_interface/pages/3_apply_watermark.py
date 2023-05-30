@@ -74,8 +74,13 @@ def apply_watermark_page(username):
 
                 # # Add watermark to the main image
                 result_image = add_watermark(image_file, watermark_file, X, Y)
-                # # Display the resulting image
-                st.image(Image.open(io.BytesIO(result_image)).convert("RGBA"), caption="Result", use_column_width=True)
+                if result_image:
+                    # # Display the resulting image
+                    st.write("Result:")
+                    st.image(Image.open(io.BytesIO(result_image)).convert("RGBA"), caption="Result", use_column_width=True)
+
+                else:
+                    st.write("Something went wrong, please try again")
 
 
 if __name__=='__main__':
