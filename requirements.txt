@@ -4,7 +4,7 @@ pdf2image
 boto3
 phonenumbers
 awscli
-botocore.exceptions
+botocore
 requests
 pandas
 numpy
