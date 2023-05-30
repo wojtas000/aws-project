@@ -14,7 +14,7 @@ client = boto3.client('cognito-idp', region_name=REGION_NAME)
 def landing_page():
 
     st.title('Welcome to watermark app!', anchor='center')
-    st.image('images/watermark-logo.png', width=300)
+    st.image('user_interface/images/watermark-logo.png', width=300)
     st.write('This is a watermark app that allows you to:')
     st.write('- Upload an image and watermark')
     st.write('- Add a watermark to the image')
