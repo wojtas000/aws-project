@@ -1,82 +1,98 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: 2010-09-09
+Description: The template used to create an ECS Service from the ECS Console.
+Parameters:
+  ECSClusterName:
+    Type: String
+    Default: my-cluster
+  SecurityGroupIDs:
+    Type: CommaDelimitedList
+    Default: sg-045b551697ada03b1
+  SubnetIDs:
+    Type: CommaDelimitedList
+    Default: 'subnet-01cc2f6d02bbfccde,subnet-06c2bf834dce977c1,subnet-0f12d0b27067d842c'
+  VpcID:
+    Type: String
+    Default: vpc-0c50cbeab869a341a
+  LoadBalancerName:
+    Type: String
+    Default: my-load-balancer2
 Resources:
-  ECRRepository:
-    Type: "AWS::ECR::Repository"
+  ECSService:
+    Type: 'AWS::ECS::Service'
     Properties:
-      RepositoryName: "my-container-app"
-
-  TaskDefinition:
-    Type: "AWS::ECS::TaskDefinition"
-    Properties:
-      Family: "streamlit-task"
-      Cpu: "256"
-      Memory: "512"
-      NetworkMode: "awsvpc"
-      RequiresCompatibilities:
-        - "FARGATE"
-      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
-      ContainerDefinitions:
-        - Name: "streamlit-container"
-          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/my-container-app"
-          PortMappings:
-            - ContainerPort: 8501
-              Protocol: "tcp"
-
-  TaskExecutionRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: "streamlit-task-execution-role"
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "ecs-tasks.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      ManagedPolicyArns:
-        - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-
-  Cluster:
-    Type: "AWS::ECS::Cluster"
-
-  Service:
-    Type: "AWS::ECS::Service"
-    DependsOn:
-      - TaskDefinition
-    Properties:
-      Cluster: !Ref Cluster
-      ServiceName: "streamlit-service"
-      LaunchType: "FARGATE"
+      Cluster: my-cluster
+      CapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Base: 0
+          Weight: 1
+      TaskDefinition: 'arn:aws:ecs:eu-central-1:976239705727:task-definition/my-new-task:2'
+      ServiceName: my-service6
+      SchedulingStrategy: REPLICA
       DesiredCount: 1
-      TaskDefinition: !Ref TaskDefinition
+      LoadBalancers:
+        - ContainerName: my-new-task
+          ContainerPort: 8501
+          LoadBalancerName: !Ref 'AWS::NoValue'
+          TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-          Subnets:
-            - !Ref SubnetIds
-          SecurityGroups:
-            - !Ref SecurityGroup
-
-  SecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
+          AssignPublicIp: ENABLED
+          SecurityGroups: !Ref SecurityGroupIDs
+          Subnets: !Ref SubnetIDs
+      PlatformVersion: LATEST
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      DeploymentController:
+        Type: ECS
+      ServiceConnectConfiguration:
+        Enabled: false
+      Tags: []
+      EnableECSManagedTags: true
+    DependsOn:
+      - Listener
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     Properties:
-      GroupDescription: "Allow inbound access to the Streamlit app"
-      VpcId: !Ref VpcId
-      SecurityGroupIngress:
-        - CidrIp: "0.0.0.0/0"
-          IpProtocol: "tcp"
-          FromPort: 8501
-          ToPort: 8501
-
-Parameters:
-  VpcId:
-    Type: "AWS::EC2::VPC::Id"
-
-  SubnetIds:
-    Type: "List<AWS::EC2::Subnet::Id>"
-    Description: "Select the subnets to launch the Fargate tasks"
-
+      Type: application
+      Name: my-load-balancer2
+      SecurityGroups: !Ref SecurityGroupIDs
+      Subnets: !Ref SubnetIDs
+  TargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckPath: /
+      Name: my-new-group
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+      HealthCheckProtocol: HTTP
+      VpcId: !Ref VpcID
+  Listener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: '8501'
+      Protocol: HTTP
 Outputs:
-  StreamlitAppURL:
-    Description: "URL to access the Streamlit app"
-    Value: !Sub "http://!Ref Service.EndpointURL/health"
+  ClusterName:
+    Description: The cluster used to create the service.
+    Value: !Ref ECSClusterName
+  ECSService:
+    Description: The created service.
+    Value: !Ref ECSService
+  LoadBalancer:
+    Description: The created load balancer.
+    Value: !Ref LoadBalancer
+  Listener:
+    Description: The created listener.
+    Value: !Ref Listener
+  TargetGroup:
+    Description: The created target group.
+    Value: !Ref TargetGroup
