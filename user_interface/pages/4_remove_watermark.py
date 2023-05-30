@@ -1,6 +1,6 @@
 import streamlit as st
 import boto3
-from pages.api_package.add_remove_watermark import remove_watermark
+from pages.api_and_functions.add_remove_watermark import remove_watermark
 
 # Tworzenie klienta S3
 s3 = boto3.client('s3')

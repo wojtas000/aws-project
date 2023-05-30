@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from pages.api_package.api_requests import get_user_history
+from pages.api_and_functions.api_requests import get_user_history
 
 
 def User_history(username):

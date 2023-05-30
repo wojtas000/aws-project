@@ -2,8 +2,8 @@ import streamlit as st
 from PIL import Image
 import io
 import boto3
-from pages.api_package.api_requests import get_image_list
-from pages.api_package.add_remove_watermark import add_watermark
+from pages.api_and_functions.api_requests import get_image_list
+from pages.api_and_functions.add_remove_watermark import add_watermark
 
 # Create S3 client
 s3 = boto3.client('s3')
