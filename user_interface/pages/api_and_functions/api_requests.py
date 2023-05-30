@@ -66,7 +66,7 @@ def add_watermark(main_image_bytes, watermark_image_bytes, X, Y):
     # Check the response status code
     if response.status_code == 200:
         response_json = response.json()
-        response_body = response_json['body'][17:-1]
+        response_body = eval(response_json['body'])['result_image']
         # result_image_base64 = response_body[9:]
         result_image_bytes = base64.b64decode(response_body)
         return result_image_bytes
