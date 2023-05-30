@@ -6,3 +6,4 @@ phonenumbers
 awscli
 json
 botocore.exceptions
+requests

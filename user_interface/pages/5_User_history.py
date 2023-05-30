@@ -1,40 +1,34 @@
 import boto3
 import pandas as pd
+import requests
 import streamlit as st
 
-def return_user_history(user_login):
-    # Create a DynamoDB client
-    dynamodb = boto3.resource('dynamodb')
+user_history_endpoint = "https://1tn5vi9uuh.execute-api.eu-central-1.amazonaws.com/prod/user-history"
 
-    # Specify the table name
-    table_name = 'User_history'
-
-    # Get the DynamoDB table
-    table = dynamodb.Table(table_name)
-
-    # Scan the table to retrieve all items
-    response = table.scan()
-
-    # Check if any items were returned
-    if 'Items' in response:
-        items = response['Items']
-        returned = False
-        activities = pd.DataFrame(columns=['User', 'Action', 'Date'])
-        for item in items:
-            try:
-                if item['User'] == user_login:
-                    image_name = item['Image_ID'].split('/')[-1]
-                    activities = activities.append({'User': item['User'], 'Date': item['Date'],  'Action': item['Action'] + ' ' + image_name}, ignore_index=True)
-                    returned = True
-            except:
-                pass
-        if returned == False:
-            print("No items found with user-id '%s'" % user_login)
-        else:
-            return activities.sort_values(by=['Date'], ascending=True).set_index('Date')
+def User_history(username):
+    st.title("User history")
+    st.write("Here you can see your history of uploading and deleting images and watermarks")
     
+    payload = {
+        "user_login": username
+    }
+
+    response = requests.get(user_history_endpoint, json=payload)
+
+    if response.status_code == 200:
+        
+        response_json = response.json()
+
+        history = eval(response_json['body'])
+        history = pd.DataFrame(history).sort_values(by=['Date'], ascending=True).set_index('Date')
+        st.dataframe(history)
+    else:
+        st.write("Error: Failed to retrieve history.")
+
+
 if __name__ == "__main__":
-    try:
-        st.dataframe(return_user_history(st.session_state['username']))
-    except:
-        st.write('Please sign in to see your history')
+
+    if 'username' not in st.session_state:
+        st.session_state['username'] = None
+    
+    User_history(username=st.session_state['username'])
