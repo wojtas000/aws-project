@@ -5,6 +5,10 @@ from pages.api_and_functions.api_requests import get_user_history
 
 def User_history(username):
     
+    if st.session_state['username'] is None:
+        st.write('You have to sign in first!')
+        st.stop()
+
     st.title("User history")
     st.write("Here you can see your history of uploading and deleting images and watermarks")
     
