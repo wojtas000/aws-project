@@ -20,6 +20,7 @@ def add_watermark(main_image, watermark_image, X, Y):
     return main_image
 
 
+
 def remove_watermark(image_bytes):
     # Load the image
     image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
