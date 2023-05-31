@@ -1,6 +1,6 @@
 import streamlit as st
 import boto3
-from pages.api_and_functions.api_requests import get_image_list
+from pages.api_and_functions.api_requests import get_image_list, upload_image
 
 # Create S3 client
 s3 = boto3.client('s3')
@@ -22,27 +22,38 @@ def upload_page(username):
         with image:
             
             image_file = st.file_uploader("Upload the main image", type=["png"])
-            
+            if image_file:
+                st.image(image_file, caption=image_file.name, use_column_width=True)
+
             temp_list_of_images = get_image_list(username, 'images')
             
-            if image_file and (username+'/'+image_file.name) not  in temp_list_of_images:
-                s3.upload_fileobj(image_file, 'watermark-project-images-bucket', username+'/'+image_file.name)
 
             if st.button("Upload image to database"):
                 if image_file and (username+'/'+image_file.name) not  in temp_list_of_images:
-                    s3.upload_fileobj(image_file, 'watermark-project-images-bucket', username+'/'+image_file.name)
+                    
+                    response = upload_image(image_data=image_file.read(), 
+                                            image_name=image_file.name, 
+                                            bucket_type='images', 
+                                            username=username)
+        
                     st.experimental_rerun()
 
 
         with watermark:
             
             watermark_file = st.file_uploader("Upload the watermark", type=["png"])
-            
+            if watermark_file:
+                st.image(watermark_file, caption=watermark_file.name, use_column_width=True)
             temp_list_of_watermarks = get_image_list(username, 'watermarks')
 
             if st.button("Upload watermark to database"):
                 if watermark_file and (username+'/'+watermark_file.name) not in temp_list_of_watermarks:
-                    s3.upload_fileobj(watermark_file, 'watermark-project-watermarks-bucket', username+'/'+watermark_file.name)
+                    
+                    response = upload_image(image_data=watermark_file.read(), 
+                        image_name=watermark_file.name, 
+                        bucket_type='watermarks', 
+                        username=username)
+            
                     st.experimental_rerun()
 
 
