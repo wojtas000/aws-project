@@ -25,6 +25,8 @@ def list_images_page(username):
 
             if images:
                 for i, obj in enumerate(images):
+                    if len(obj) > 25:
+                        obj = obj[:25] + '...'
                     st.write(f"{i+1}. {obj}")
             else:
                 st.write("No images found.")
@@ -41,6 +43,8 @@ def list_images_page(username):
             
             if watermarks:
                 for i, obj in enumerate(watermarks):
+                    if len(obj) > 25:
+                        obj = obj[:25] + '...'
                     st.write(f"{i+1}. {obj}")
             else:
                 st.write("No watermarks found.")
