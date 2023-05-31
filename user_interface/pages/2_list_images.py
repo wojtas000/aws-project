@@ -25,6 +25,7 @@ def list_images_page(username):
 
             if images:
                 for i, obj in enumerate(images):
+                    obj = obj.split('/')[-1]
                     if len(obj) > 25:
                         obj = obj[:25] + '...'
                     st.write(f"{i+1}. {obj}")
@@ -43,6 +44,7 @@ def list_images_page(username):
             
             if watermarks:
                 for i, obj in enumerate(watermarks):
+                    obj = obj.split('/')[-1]
                     if len(obj) > 25:
                         obj = obj[:25] + '...'
                     st.write(f"{i+1}. {obj}")
