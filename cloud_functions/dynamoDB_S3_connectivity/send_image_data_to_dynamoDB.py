@@ -2,35 +2,36 @@ import json
 import uuid
 import boto3
 from datetime import datetime
+    
+s3_client = boto3.client('s3', region_name='eu-central-1')
+dynamodb_client = boto3.client('dynamodb', region_name='eu-central-1')
+rekognition_client = boto3.client('rekognition', region_name='eu-central-1')
 
 def lambda_handler(event, context):
-
-    s3_client = boto3.client('s3')
+    
 
     # Retrieve S3 bucket and object information from the event
     s3_bucket = event['Records'][0]['s3']['bucket']['name']
     s3_key = event['Records'][0]['s3']['object']['key']
-
+    print(s3_bucket)
+    print(s3_key)
     # Extract the metadata of the image
     response = s3_client.head_object(Bucket=s3_bucket, Key=s3_key)
     image_size = response['ContentLength']
     image_format = response['ContentType']
     
     # Extract image label using Amazon Rekognition
-    rekognition_client = boto3.client('rekognition')
     rekognition_response = rekognition_client.detect_labels(
         Image={'S3Object': {'Bucket': s3_bucket, 'Name': s3_key}},
         MaxLabels=1
     )
 
     label = rekognition_response['Labels'][0]['Name']
-    
+  
     # Update DynamoDB table with image information
-    dynamodb_client = boto3.client('dynamodb')
     images_table = 'Images'
     user_history_table = 'User_history'
-    
-
+  
     item = {
         'Image_ID': {'S': str(s3_key)},
         'Label': {'S': label},

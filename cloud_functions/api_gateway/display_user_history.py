@@ -1,11 +1,12 @@
 import boto3
 import json
 
+dynamodb = boto3.resource('dynamodb')
+
 def lambda_handler(event, context):
     # Get the user_login from the query parameters in the event
     user_login = event['user_login']
 
-    dynamodb = boto3.resource('dynamodb')
 
     # Specify the table name
     table_name = 'User_history'

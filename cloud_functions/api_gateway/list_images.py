@@ -1,13 +1,12 @@
 import json
 import boto3
 
+s3 = boto3.client('s3', region_name='eu-central-1')
+
 def lambda_handler(event, context):
     # Extract the username from the event payload
     username = event['username']
     bucket_type = event['bucket_type']
-
-    # Create an S3 client
-    s3 = boto3.client('s3')
     
     if bucket_type == 'images':
         response = s3.list_objects(Bucket='watermark-project-images-bucket', Prefix=username+'/')

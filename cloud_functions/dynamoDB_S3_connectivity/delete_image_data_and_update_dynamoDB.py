@@ -4,13 +4,15 @@ import boto3
 from datetime import datetime
 
 
+dynamodb_client = boto3.client('dynamodb', region_name='eu-central-1')
+
+
 def lambda_handler(event, context):
     # Retrieve S3 bucket and object information from the event
     s3_bucket = event['Records'][0]['s3']['bucket']['name']
     s3_key = event['Records'][0]['s3']['object']['key']
 
     # Delete record from DynamoDB table
-    dynamodb_client = boto3.client('dynamodb')
     dynamodb_table = 'Images'
     user_history_table = 'User_history'
 
