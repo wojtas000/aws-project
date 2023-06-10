@@ -15,8 +15,8 @@ def read_image_to_base64(image_path):
 
 class TestLambdaFunctions(unittest.TestCase):
 
-    image = read_image_to_base64('./image.png')
-    watermark = read_image_to_base64('./watermark.png')
+    image = read_image_to_base64('./test_images/image.png')
+    watermark = read_image_to_base64('./test_images/watermark.png')
     username = 'test_account'
 
 
