@@ -79,6 +79,15 @@ def apply_watermark_page(username):
                     st.write("Result:")
                     st.image(Image.open(io.BytesIO(result_image)).convert("RGBA"), caption="Result", use_column_width=True)
 
+                    if st.button('Download Result'):
+                        st.write("Downloading...")
+                        st.download_button(
+                            label="Download Result",
+                            data=result_image,
+                            file_name="result.png",
+                            mime="image/png"
+                        )
+
                 else:
                     st.write("Something went wrong, please try again")
 
