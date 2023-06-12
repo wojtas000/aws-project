@@ -79,7 +79,7 @@ def apply_watermark_page(username):
                     st.write("Result:")
                     st.image(Image.open(io.BytesIO(result_image)).convert("RGBA"), caption="Result", use_column_width=True)
 
-                    download_button = st.download_button(label="Download Watermarked Image", data=result_image, file_name="watermarked_image.png")
+                    download_button = st.download_button(label="Download result", data=result_image, file_name="watermarked_image.png")
 
 
 if __name__=='__main__':
