@@ -8,15 +8,22 @@ dynamodb_client = boto3.client('dynamodb', region_name='eu-central-1')
 
 
 def lambda_handler(event, context):
+
+    """
+    This function is called when the user deletes an image from S3.
+    It deletes the record from the DynamoDB Images table and updates the User_history table with appropriate information.
+    """
+
     # Retrieve S3 bucket and object information from the event
     s3_bucket = event['Records'][0]['s3']['bucket']['name']
     s3_key = event['Records'][0]['s3']['object']['key']
 
-    # Delete record from DynamoDB table
+    # Specify the table names
     dynamodb_table = 'Images'
     user_history_table = 'User_history'
 
-    item_id = s3_key  # Assuming the Image_ID in DynamoDB matches the S3 object key
+    # Get the item ID
+    item_id = s3_key
 
     # Delete record from Images table
     dynamodb_client.delete_item(
@@ -39,6 +46,7 @@ def lambda_handler(event, context):
     else:
         user = 'Unknown'
     
+    # Perform the deletion action
     action = 'deletion'
     
     item = {

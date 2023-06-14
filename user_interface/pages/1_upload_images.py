@@ -2,6 +2,7 @@ import streamlit as st
 import boto3
 from pages.api_and_functions.api_requests import get_image_list, upload_image
 
+
 # Create S3 client
 s3 = boto3.client('s3')
 

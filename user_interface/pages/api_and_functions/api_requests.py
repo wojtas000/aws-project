@@ -1,7 +1,12 @@
+"""
+This module contains functions handling requests to the API Gateway.
+"""
+
 import requests
 import base64
 import json
 import base64
+
 
 API_ROOT = 'https://1tn5vi9uuh.execute-api.eu-central-1.amazonaws.com/prod'
 

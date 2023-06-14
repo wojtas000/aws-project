@@ -2,7 +2,9 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 
+
 def get_cognito_secrets():
+    
     """
     Get Cognito secrets from AWS Secrets Manager
     """

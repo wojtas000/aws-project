@@ -9,6 +9,11 @@ rekognition_client = boto3.client('rekognition', region_name='eu-central-1')
 
 def lambda_handler(event, context):
     
+    """
+    This function is called when the user uploads an image to S3.
+    It updates the DynamoDB Images table with the image information and updates the User_history table with appropriate information.
+    The event contains:
+    """
 
     # Retrieve S3 bucket and object information from the event
     s3_bucket = event['Records'][0]['s3']['bucket']['name']
@@ -28,7 +33,7 @@ def lambda_handler(event, context):
 
     label = rekognition_response['Labels'][0]['Name']
   
-    # Update DynamoDB table with image information
+    # Update DynamoDB tables with information
     images_table = 'Images'
     user_history_table = 'User_history'
   
