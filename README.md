@@ -6,15 +6,15 @@ AWS project for Cloud Computing.
 
 ```
 .
-├── Dockerfile
-│
 ├── README.md
 │
-├── cloudformation-template.yaml
+├── Dockerfile  <- docker image 
 │
-├── requirements.txt
+├── cloudformation-template.yaml <- cloudformation template
 │
-├── cloud_functions
+├── requirements.txt <- python requirements
+│
+├── cloud_functions <- aws lambda functions
 │   ├── api_gateway
 │   │   ├── display_user_history.py
 │   │   ├── insert_watermark.py
@@ -28,8 +28,7 @@ AWS project for Cloud Computing.
 │   │   └── test_event_send.json
 │   │
 │   ├── test_images
-│   │   ├── image.png
-│   │   └── watermark.png
+│   │   └── ...
 │   │
 │   └── unit_tests_lambda_functions.py
 │
@@ -37,14 +36,14 @@ AWS project for Cloud Computing.
 ├── resources
 │   └── ...
 │
-├── tests
+├── tests   <- unit tests
 │   └── test_add_watermark.py
 │
-└── user_interface
+└── user_interface <- source code for the streamlit app
     ├── images
     │   └── watermark-logo.png
     │
-    ├── main_page.py
+    ├── main_page.py <- entry script for deploying the app
     │
     └── pages
         ├── 1_upload_images.py
